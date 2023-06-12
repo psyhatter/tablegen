@@ -298,6 +298,7 @@ type ` + tableIndexesType + ` struct { table ` + tableType + ` }
 		for _, col := range index.Columns {
 			cols = append(cols, col.Column)
 		}
+		cols = unique(cols)
 
 		sort.Slice(cols, func(i, j int) bool { return less(cols[i], cols[j]) })
 
@@ -401,6 +402,16 @@ func filter[T any](s []T, cond func(T) bool) []T {
 	for _, v := range s {
 		if cond(v) {
 			s[n], n = v, n+1
+		}
+	}
+	return s[:n]
+}
+
+func unique[T comparable](s []T) []T {
+	set, n, ok := make(map[T]struct{}, len(s)), 0, false
+	for _, v := range s {
+		if _, ok = set[v]; !ok {
+			s[n], n, set[v] = v, n+1, struct{}{}
 		}
 	}
 	return s[:n]
