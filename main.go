@@ -133,13 +133,19 @@ func LoadMigrations(dir string) (map[spansql.ID]*Table, error) {
 }
 
 func CreateFileData(tables map[spansql.ID]*Table) (map[string][]byte, error) {
+	fileName := "tables.go"
+	b, err := gosimports.Process(fileName, mainFile(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("formatting %q: %w", fileName, err)
+	}
+
 	files := make(map[string][]byte, len(tables)+1)
-	files["tables.go"] = mainFile()
+	files[fileName] = b
 
 	var buf bytes.Buffer
 	for _, table := range tables {
 		snakelike := camelToSnakeCase(string(table.Name))
-		fileName := snakelike + ".go"
+		fileName = snakelike + ".go"
 		if _, exist := files[fileName]; exist {
 			for i := 2; true; i++ {
 				fileName = snakelike + strconv.Itoa(i) + ".go"
@@ -152,8 +158,8 @@ func CreateFileData(tables map[spansql.ID]*Table) (map[string][]byte, error) {
 		buf.Reset()
 		generate(&buf, table)
 
-		b := append([]byte{}, buf.Bytes()...)
-		b, err := gosimports.Process(fileName, b, nil)
+		b = append([]byte{}, buf.Bytes()...)
+		b, err = gosimports.Process(fileName, b, nil)
 		if err != nil {
 			return files, fmt.Errorf("formatting %q: %w", fileName, err)
 		}
@@ -175,7 +181,7 @@ type AllTables struct{ alias string }
 
 type Index struct {
 	tableAlias, tableName, indexName string
-	columns                      []string
+	columns                          []string
 }
 
 func (i Index) Name() string             { return i.indexName }
