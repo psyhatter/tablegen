@@ -218,9 +218,9 @@ func (t AllTables) ` + tableType + `() ` + tableType + `{ return ` + tableType +
 
 type ` + tableType + ` struct { alias string }
 
-func (t ` + tableType + `) Alias() string { return t.alias }
+func (t ` + tableType + `) TableAlias() string { return t.alias }
 func (t ` + tableType + `) name() string { return "` + tableName + `" }
-func (t ` + tableType + `) Name() string { return tableName(t.name(), "", t.alias) }`)
+func (t ` + tableType + `) TableName() string { return tableName(t.name(), "", t.alias) }`)
 
 	// TODO: Cast to camelCase and check that the type is not already taken.
 	tableColsType := string(table.Name) + "Cols"
