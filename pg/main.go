@@ -32,15 +32,14 @@ import (
 )
 
 var (
-	dst = flag.String("dst", "internal/store/postgres/tables", "where to save models")
+	migrationPath = flag.String(
+		"src",
+		".db/postgres/migrations",
+		"where are the migration files stored",
+	)
+	dst = flag.String("dst", "internal/store/postgres/tables", "where to store the table structures")
 
 	rawInitialisms = flag.String("initialisms", "", "comma separated initialisms")
-
-	migrationPath = flag.String(
-		"migrationPath",
-		".db/postgres/migrations",
-		"to specify migration files folder",
-	)
 
 	logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{AddSource: true}))
 )
