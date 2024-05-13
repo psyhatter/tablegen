@@ -39,6 +39,8 @@ var (
 	)
 	dst = flag.String("dst", "internal/store/postgres/tables", "where to store the table structures")
 
+	imageName = flag.String("image", "postgres:alpine", "name of the docker image with postgres")
+
 	rawInitialisms = flag.String("initialisms", "", "comma separated initialisms")
 
 	logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{AddSource: true}))
@@ -99,9 +101,7 @@ func SetUpContainer(ctx context.Context, cli *client.Client, creds string) (db *
 		}
 	}()
 
-	imageName := "postgres"
-
-	out, err := cli.ImagePull(ctx, imageName, image.PullOptions{})
+	out, err := cli.ImagePull(ctx, *imageName, image.PullOptions{})
 	if err != nil {
 		return nil, "", errors.WithStack(err)
 	}
@@ -120,7 +120,7 @@ func SetUpContainer(ctx context.Context, cli *client.Client, creds string) (db *
 	resp, err := cli.ContainerCreate(
 		ctx,
 		&container.Config{
-			Image: imageName,
+			Image: *imageName,
 			Cmd: []string{
 				"postgres",
 				"-c", "fsync=off",
