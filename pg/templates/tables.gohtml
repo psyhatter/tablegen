@@ -105,6 +105,10 @@ func (v *{{ .CamelCasedTableName }}Select) GetScanValue(column string) any {
     }
 }
 
+{{ if not .PrimaryKeys }}
+func (v {{ .CamelCasedTableName }}Select) GetTable() {{ .TableType }} { return Get().{{ .CamelCasedTableName }}() }
+{{ end }}
+
 // ---------------------------------------------------------------------
 //                                INSERT
 // ---------------------------------------------------------------------
@@ -157,6 +161,10 @@ func (v {{ .CamelCasedTableName }}Insert) GetValue(column string) any {
         return nil
     }
 }
+
+{{ if not .PrimaryKeys }}
+func (v {{ .CamelCasedTableName }}Insert) GetTable() {{ .TableType }} { return Get().{{ .CamelCasedTableName }}() }
+{{ end }}
 
 // ---------------------------------------------------------------------
 //                                UPDATE
