@@ -151,6 +151,11 @@ func (v {{ .CamelCasedTableName }}Insert) GetValue(column string) any {
     switch column {
     {{- range $index, $col := .Cols }}
     case "{{ .Name }}":
+        {{- if or .Nullable .Default -}}
+        if v.{{ snakeToCamelCase .Name }} == nil {
+            return nil
+        }
+        {{- end -}}
         {{- if or (eq .Type "jsonb") (eq .Type "json") }}
         return jsonEncoder{v.{{ snakeToCamelCase .Name }} }
         {{- else }}
